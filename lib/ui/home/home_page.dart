@@ -8,6 +8,7 @@ import 'package:quotes_app/data/repository/quote_repository.dart';
 import 'package:quotes_app/ui/global/strings.dart';
 import 'package:quotes_app/ui/global/theme/app_themes.dart';
 import 'package:quotes_app/ui/global/theme/bloc/theme_bloc.dart';
+import 'package:quotes_app/ui/home/detail_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
@@ -77,19 +78,59 @@ class _HomeState extends State<Home> {
   }
 
   Widget buildForQuoteLoaded(QuoteLoaded state) {
-    return ListView.builder(
-      itemCount: state.quotes.quoteList.length,
-      itemBuilder: (context, index) {
-        final item = state.quotes.quoteList[index];
-        return Column(
-          children: [
-            SizedBox(
-              height: 10,
-            ),
-            Text(item.text)
-          ],
-        );
+    return NotificationListener<OverscrollIndicatorNotification>(
+      onNotification: (overscroll) {
+        overscroll.disallowGlow();
+        return false;
       },
+      child: ListView.builder(
+        itemCount: state.quotes.quoteList.length,
+        itemBuilder: (context, index) {
+          final item = state.quotes.quoteList[index];
+          return Card(
+            margin: EdgeInsets.only(left: 30, top: 10, bottom: 10),
+            key: Key(item.id),
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DetailPage(quote: item)),
+                );
+              },
+              child: Container(
+                padding: EdgeInsets.all(20),
+                child: Stack(
+                  children: [
+                    Text(
+                      "“",
+                      style: TextStyle(fontSize: 50),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(top: 20),
+                          padding: EdgeInsets.all(10),
+                          child: Text(item.text),
+                        ),
+                        SizedBox(height: 10),
+                        Container(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                              "- ${item.author.isEmpty ? "Anonymous" : item.author}",
+                              textAlign: TextAlign.end,
+                              style: TextStyle(fontSize: 12)),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

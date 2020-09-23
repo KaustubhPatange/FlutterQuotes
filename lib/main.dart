@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:quotes_app/ui/global/strings.dart';
 import 'package:quotes_app/ui/global/theme/app_themes.dart';
 import 'package:quotes_app/ui/home/home_page.dart';
@@ -32,13 +33,15 @@ class MyApp extends StatelessWidget {
       preferenceLoaded = true;
       loadPreference(context);
     }
-    return MaterialApp(
-        title: 'Flutter Demo',
-        debugShowCheckedModeBanner: false,
-        theme: state.themeData,
-        home: Home(
-          current: state.theme,
-        ));
+    return OKToast(
+      child: MaterialApp(
+          title: 'Flutter Demo',
+          debugShowCheckedModeBanner: false,
+          theme: state.themeData,
+          home: Home(
+            current: state.theme,
+          )),
+    );
   }
 
   void loadPreference(BuildContext context) async {

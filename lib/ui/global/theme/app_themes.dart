@@ -10,11 +10,13 @@ final appThemeData = {
     fontFamily: 'Epilogue',
     primaryColor: CustomColors.DarkColor,
     scaffoldBackgroundColor: CustomColors.DarkColor,
+    cardColor: CustomColors.PaleDarkColor,
     visualDensity: VisualDensity.adaptivePlatformDensity,
   ),
   AppTheme.LIGHT: ThemeData(
     fontFamily: 'Epilogue',
     primaryColor: CustomColors.LightColor,
+    cardColor: CustomColors.PaleLightColor,
     visualDensity: VisualDensity.adaptivePlatformDensity,
   ),
 };
