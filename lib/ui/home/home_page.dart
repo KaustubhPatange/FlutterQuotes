@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:mdi/mdi.dart';
 import 'package:quotes_app/data/blocs/quoteBloc/quote_bloc.dart';
 import 'package:quotes_app/data/injection.iconfig.dart';
+import 'package:quotes_app/data/model/quote.dart';
 import 'package:quotes_app/data/repository/quote_repository.dart';
 import 'package:quotes_app/ui/global/strings.dart';
 import 'package:quotes_app/ui/global/theme/app_themes.dart';
@@ -60,7 +62,7 @@ class _HomeState extends State<Home> {
     if (state is QuoteLoading) {
       return buildForLoading();
     } else if (state is QuoteLoaded) {
-      return buildForQuoteLoaded(state);
+      return buildForQuoteLoaded(context, state);
     } else if (state is QuoteError) {
       return buildForError(state);
     }
@@ -77,59 +79,82 @@ class _HomeState extends State<Home> {
     return Text(state.message);
   }
 
-  Widget buildForQuoteLoaded(QuoteLoaded state) {
+  Widget buildForQuoteLoaded(BuildContext context, QuoteLoaded state) {
+    final bloc = BlocProvider.of<QuoteBloc>(context);
     return NotificationListener<OverscrollIndicatorNotification>(
       onNotification: (overscroll) {
         overscroll.disallowGlow();
         return false;
       },
-      child: ListView.builder(
-        itemCount: state.quotes.quoteList.length,
-        itemBuilder: (context, index) {
-          final item = state.quotes.quoteList[index];
-          return Card(
-            margin: EdgeInsets.only(left: 30, top: 10, bottom: 10),
-            key: Key(item.id),
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => DetailPage(quote: item)),
-                );
-              },
-              child: Container(
-                padding: EdgeInsets.all(20),
-                child: Stack(
-                  children: [
-                    Text(
-                      "“",
-                      style: TextStyle(fontSize: 50),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(top: 20),
-                          padding: EdgeInsets.all(10),
-                          child: Text(item.text),
-                        ),
-                        SizedBox(height: 10),
-                        Container(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                              "- ${item.author.isEmpty ? "Anonymous" : item.author}",
-                              textAlign: TextAlign.end,
-                              style: TextStyle(fontSize: 12)),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ),
+      child: LazyLoadScrollView(
+        onEndOfPage: () {
+          if (int.parse(state.quotes.currentPage) < state.quotes.totalPages) {
+            print("Loading page: ${state.quotes.currentPage}");
+            bloc.add(GetQuotes());
+          }
+        },
+        scrollOffset: 100,
+        child: ListView.builder(
+          itemCount: calculateListItemCount(state),
+          itemBuilder: (context, index) {
+            return index >= state.quotes.quoteList.length
+                ? Padding(padding: EdgeInsets.all(10), child: buildForLoading())
+                : renderCard(state.quotes.quoteList[index]);
+          },
+        ),
+      ),
+    );
+  }
+
+  int calculateListItemCount(QuoteLoaded state) {
+    if (int.parse(state.quotes.currentPage) >= state.quotes.totalPages) {
+      return state.quotes.quoteList.length;
+    } else {
+      // + 1 for the loading indicator
+      return state.quotes.quoteList.length + 1;
+    }
+  }
+
+  Widget renderCard(Quote item) {
+    return Card(
+      margin: EdgeInsets.only(left: 30, top: 10, bottom: 10),
+      key: Key(item.id),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => DetailPage(quote: item)),
           );
         },
+        child: Container(
+          padding: EdgeInsets.all(20),
+          child: Stack(
+            children: [
+              Text(
+                "“",
+                style: TextStyle(fontSize: 50),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top: 20),
+                    padding: EdgeInsets.all(10),
+                    child: Text(item.text),
+                  ),
+                  SizedBox(height: 10),
+                  Container(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                        "- ${item.author.isEmpty ? "Anonymous" : item.author}",
+                        textAlign: TextAlign.end,
+                        style: TextStyle(fontSize: 12)),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

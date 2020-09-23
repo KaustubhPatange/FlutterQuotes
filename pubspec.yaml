@@ -35,6 +35,8 @@ dependencies:
   get_it: ^3.1.0
   oktoast: ^2.1.8
   share:
+  lazy_load_scrollview: 1.1.0
+  http:
 
 dev_dependencies:
   flutter_test:

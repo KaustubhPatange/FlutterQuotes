@@ -36,6 +36,16 @@ class Quotes extends Equatable {
   @override
   List<Object> get props => [statusCode, message, totalPages, currentPage];
 
+  static Quotes mergeQuotes(Quotes pre, Quotes increment) {
+    return Quotes(
+      currentPage: increment.currentPage,
+      message: increment.message,
+      statusCode: increment.statusCode,
+      totalPages: increment.totalPages,
+      quoteList: pre.quoteList..addAll(increment.quoteList),
+    );
+  }
+
   factory Quotes.fromJson(Map<String, dynamic> json) {
     List<dynamic> jsonArray = json["quotes"];
     var quoteList = jsonArray.map((e) => Quote.fromJson(e)).toList();

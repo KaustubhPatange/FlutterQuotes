@@ -24,11 +24,10 @@ class _DetailPageState extends State<DetailPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(
-          "Quotes",
-        ),
+        elevation: 0,
       ),
       body: _scaffoldBody(context),
+      extendBodyBehindAppBar: true,
     );
   }
 

@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:quotes_app/data/model/quote.dart';
+import 'package:quotes_app/data/quote_datasource.dart';
 import 'package:quotes_app/data/repository/quote_repository.dart';
 
 part 'quote_event.dart';
@@ -18,15 +19,15 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
   Stream<QuoteState> mapEventToState(
     QuoteEvent event,
   ) async* {
-    yield QuoteLoading();
     if (event is GetQuotes) {
       try {
-        var quotes = await quoteRepository.fetchQuotes();
-        if (quotes.statusCode != 200) {
-          yield QuoteError(message: quotes.message);
-          return;
+        if (!quoteRepository.isNextPage()) {
+          yield QuoteLoading();
         }
+        var quotes = await quoteRepository.fetchQuotes();
         yield QuoteLoaded(quotes: quotes);
+      } on InvalidPageException catch (ex) {
+        // TODO: do something on no pages
       } on Error catch (ex) {
         yield QuoteError(message: ex.toString());
       }

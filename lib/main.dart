@@ -10,9 +10,11 @@ import 'data/injection.dart';
 import 'ui/global/theme/bloc/theme_bloc.dart';
 
 void main() async {
-  configureInjection(Env.dev);
+  configureInjection(Env.prod);
   SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+  // SystemChrome.setPreferredOrientations(
+  //     [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
   runApp(MyApp());
 }
 
