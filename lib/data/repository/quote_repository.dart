@@ -31,13 +31,17 @@ class DevQuoteRepository extends QuoteRepository {
 
 @injectable
 class ProdQuoteRepository extends QuoteRepository {
-  final QuoteDatasource datasource = QuoteDatasource();
+  QuoteDatasource _datasource;
 
-  @override
-  Future<Quotes> fetchQuotes() async {
-    return datasource.fetchNextQuotes();
+  ProdQuoteRepository() {
+    _datasource = GetIt.I.get<QuoteDatasource>();
   }
 
   @override
-  bool isNextPage() => datasource.currentPage >= 1;
+  Future<Quotes> fetchQuotes() async {
+    return _datasource.fetchNextQuotes();
+  }
+
+  @override
+  bool isNextPage() => _datasource.currentPage >= 1;
 }

@@ -11,6 +11,7 @@ final appThemeData = {
     primaryColor: CustomColors.DarkColor,
     scaffoldBackgroundColor: CustomColors.DarkColor,
     cardColor: CustomColors.PaleDarkColor,
+    accentColor: CustomColors.LightDarkColor,
     visualDensity: VisualDensity.adaptivePlatformDensity,
   ),
   AppTheme.LIGHT: ThemeData(

@@ -95,18 +95,18 @@ class _HomeState extends State<Home> {
         },
         scrollOffset: 100,
         child: ListView.builder(
-          itemCount: calculateListItemCount(state),
+          itemCount: _calculateListItemCount(state),
           itemBuilder: (context, index) {
             return index >= state.quotes.quoteList.length
                 ? Padding(padding: EdgeInsets.all(10), child: buildForLoading())
-                : renderCard(state.quotes.quoteList[index]);
+                : buildForCardItem(state.quotes.quoteList[index]);
           },
         ),
       ),
     );
   }
 
-  int calculateListItemCount(QuoteLoaded state) {
+  int _calculateListItemCount(QuoteLoaded state) {
     if (int.parse(state.quotes.currentPage) >= state.quotes.totalPages) {
       return state.quotes.quoteList.length;
     } else {
@@ -115,7 +115,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Widget renderCard(Quote item) {
+  Widget buildForCardItem(Quote item) {
     return Card(
       margin: EdgeInsets.only(left: 30, top: 10, bottom: 10),
       key: Key(item.id),
@@ -128,30 +128,22 @@ class _HomeState extends State<Home> {
         },
         child: Container(
           padding: EdgeInsets.all(20),
-          child: Stack(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "“",
-                style: TextStyle(fontSize: 50),
+              Text("“", textScaleFactor: 3.5),
+              Transform(
+                transform: Matrix4.translationValues(0.0, -12.0, 0.0),
+                child: Text(item.text),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    padding: EdgeInsets.all(10),
-                    child: Text(item.text),
-                  ),
-                  SizedBox(height: 10),
-                  Container(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                        "- ${item.author.isEmpty ? "Anonymous" : item.author}",
-                        textAlign: TextAlign.end,
-                        style: TextStyle(fontSize: 12)),
-                  ),
-                ],
-              )
+              SizedBox(height: 10),
+              Container(
+                alignment: Alignment.centerRight,
+                child: Text(
+                    "- ${item.author.isEmpty ? "Anonymous" : item.author}",
+                    textAlign: TextAlign.end,
+                    style: TextStyle(fontSize: 12)),
+              ),
             ],
           ),
         ),
