@@ -80,7 +80,6 @@ class _HomeState extends State<Home> {
   }
 
   Widget buildForQuoteLoaded(BuildContext context, QuoteLoaded state) {
-    final bloc = BlocProvider.of<QuoteBloc>(context);
     return NotificationListener<OverscrollIndicatorNotification>(
       onNotification: (overscroll) {
         overscroll.disallowGlow();
@@ -90,7 +89,7 @@ class _HomeState extends State<Home> {
         onEndOfPage: () {
           if (int.parse(state.quotes.currentPage) < state.quotes.totalPages) {
             print("Loading page: ${state.quotes.currentPage}");
-            bloc.add(GetQuotes());
+            BlocProvider.of<QuoteBloc>(context).add(GetQuotes());
           }
         },
         scrollOffset: 100,
