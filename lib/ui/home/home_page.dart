@@ -3,33 +3,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:mdi/mdi.dart';
+import 'package:provider/provider.dart';
 import 'package:quotes_app/data/blocs/quoteBloc/quote_bloc.dart';
 import 'package:quotes_app/data/injection.iconfig.dart';
 import 'package:quotes_app/data/model/quote.dart';
 import 'package:quotes_app/data/repository/quote_repository.dart';
+import 'package:quotes_app/data/state/theme_store.dart';
 import 'package:quotes_app/ui/global/strings.dart';
 import 'package:quotes_app/ui/global/theme/app_themes.dart';
-import 'package:quotes_app/ui/global/theme/bloc/theme_bloc.dart';
 import 'package:quotes_app/ui/home/detail_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
-  final AppTheme current;
-  Home({Key key, @required this.current}) : super(key: key);
+  Home({Key key}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
+  ThemeStore _themeStore;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _themeStore = Provider.of<ThemeStore>(context);
+  }
+
   void changeTheme(BuildContext context) async {
-    final bloc = BlocProvider.of<ThemeBloc>(context);
     final prefs = await SharedPreferences.getInstance();
-    if (widget.current == AppTheme.LIGHT) {
-      bloc.add(ThemeChanged(theme: AppTheme.DARK));
+    if (_themeStore.current == AppTheme.LIGHT) {
+      _themeStore.changeTheme(AppTheme.DARK);
       prefs.setInt(AppStrings.PREF_THEME, AppTheme.DARK.index);
     } else {
-      bloc.add(ThemeChanged(theme: AppTheme.LIGHT));
+      _themeStore.changeTheme(AppTheme.LIGHT);
       prefs.setInt(AppStrings.PREF_THEME, AppTheme.LIGHT.index);
     }
   }

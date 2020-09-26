@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mdi/mdi.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:provider/provider.dart';
 import 'package:quotes_app/data/model/quote.dart';
+import 'package:quotes_app/data/state/theme_store.dart';
 import 'package:quotes_app/ui/global/strings.dart';
 import 'package:quotes_app/ui/global/theme/app_themes.dart';
-import 'package:quotes_app/ui/global/theme/bloc/theme_bloc.dart';
 import 'package:share/share.dart';
 
 class DetailPage extends StatefulWidget {
@@ -19,6 +19,14 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+  ThemeStore _themeStore;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _themeStore = Provider.of<ThemeStore>(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,14 +134,12 @@ class _DetailPageState extends State<DetailPage> {
   void displayToast(BuildContext context, String text) {
     showToast(text,
         position: ToastPosition.bottom,
-        backgroundColor:
-            BlocProvider.of<ThemeBloc>(context).state.theme == AppTheme.DARK
-                ? Colors.grey[400]
-                : Colors.grey[850],
+        backgroundColor: _themeStore.current == AppTheme.DARK
+            ? Colors.grey[400]
+            : Colors.grey[850],
         textStyle: TextStyle(
-            color:
-                BlocProvider.of<ThemeBloc>(context).state.theme == AppTheme.DARK
-                    ? Colors.black
-                    : Colors.white));
+            color: _themeStore.current == AppTheme.DARK
+                ? Colors.black
+                : Colors.white));
   }
 }

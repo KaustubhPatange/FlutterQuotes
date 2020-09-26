@@ -38,11 +38,15 @@ dependencies:
   lazy_load_scrollview: 1.1.0
   http:
   flutter_launcher_icons: "^0.8.0"
+  mobx: ^0.3.10
+  flutter_mobx: ^0.3.4+1
+  provider:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: any
+  mobx_codegen: ^0.3.10+1
   injectable_generator: ^0.1.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
