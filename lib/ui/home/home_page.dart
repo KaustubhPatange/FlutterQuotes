@@ -1,13 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:mdi/mdi.dart';
 import 'package:provider/provider.dart';
-import 'package:quotes_app/data/blocs/quoteBloc/quote_bloc.dart';
-import 'package:quotes_app/data/injection.iconfig.dart';
 import 'package:quotes_app/data/model/quote.dart';
-import 'package:quotes_app/data/repository/quote_repository.dart';
+import 'package:quotes_app/data/state/quote_store.dart';
 import 'package:quotes_app/data/state/theme_store.dart';
 import 'package:quotes_app/ui/global/strings.dart';
 import 'package:quotes_app/ui/global/theme/app_themes.dart';
@@ -23,11 +21,13 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   ThemeStore _themeStore;
+  QuoteStore _quoteStore;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _themeStore = Provider.of<ThemeStore>(context);
+    _quoteStore = Provider.of<QuoteStore>(context)..getQuotes();
   }
 
   void changeTheme(BuildContext context) async {
@@ -55,25 +55,23 @@ class _HomeState extends State<Home> {
               onPressed: () => changeTheme(context))
         ],
       ),
-      body: BlocProvider(
-          create: (context) =>
-              QuoteBloc(quoteRepository: getIt<QuoteRepository>())
-                ..add(GetQuotes()),
-          child: BlocBuilder<QuoteBloc, QuoteState>(
-            builder: _scaffoldBody,
-          )),
+      body: Observer(
+        builder: (_) => _scaffoldBody(context),
+      ),
     );
   }
 
-  Widget _scaffoldBody(BuildContext context, QuoteState state) {
-    if (state is QuoteLoading) {
-      return buildForLoading();
-    } else if (state is QuoteLoaded) {
-      return buildForQuoteLoaded(context, state);
-    } else if (state is QuoteError) {
-      return buildForError(state);
+  Widget _scaffoldBody(BuildContext context) {
+    switch (_quoteStore.state) {
+      case QuoteState.loading:
+        return buildForLoading();
+      case QuoteState.loaded:
+        return buildForQuoteLoaded();
+      case QuoteState.error:
+        return buildForError();
+      default:
+        return Text("Hello world");
     }
-    return Text("Hello world");
   }
 
   Widget buildForLoading() {
@@ -82,11 +80,11 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget buildForError(QuoteError state) {
-    return Text(state.message);
+  Widget buildForError() {
+    return Text(_quoteStore.errorMessage);
   }
 
-  Widget buildForQuoteLoaded(BuildContext context, QuoteLoaded state) {
+  Widget buildForQuoteLoaded() {
     return NotificationListener<OverscrollIndicatorNotification>(
       onNotification: (overscroll) {
         overscroll.disallowGlow();
@@ -94,30 +92,32 @@ class _HomeState extends State<Home> {
       },
       child: LazyLoadScrollView(
         onEndOfPage: () {
-          if (int.parse(state.quotes.currentPage) < state.quotes.totalPages) {
-            print("Loading page: ${state.quotes.currentPage}");
-            BlocProvider.of<QuoteBloc>(context).add(GetQuotes());
+          if (int.parse(_quoteStore.quotes.currentPage) <
+              _quoteStore.quotes.totalPages) {
+            print("Loading page: ${_quoteStore.quotes.currentPage}");
+            _quoteStore.getQuotes();
           }
         },
         scrollOffset: 100,
         child: ListView.builder(
-          itemCount: _calculateListItemCount(state),
+          itemCount: _calculateListItemCount(),
           itemBuilder: (context, index) {
-            return index >= state.quotes.quoteList.length
+            return index >= _quoteStore.quotes.quoteList.length
                 ? Padding(padding: EdgeInsets.all(10), child: buildForLoading())
-                : buildForCardItem(state.quotes.quoteList[index]);
+                : buildForCardItem(_quoteStore.quotes.quoteList[index]);
           },
         ),
       ),
     );
   }
 
-  int _calculateListItemCount(QuoteLoaded state) {
-    if (int.parse(state.quotes.currentPage) >= state.quotes.totalPages) {
-      return state.quotes.quoteList.length;
+  int _calculateListItemCount() {
+    if (int.parse(_quoteStore.quotes.currentPage) >=
+        _quoteStore.quotes.totalPages) {
+      return _quoteStore.quotes.quoteList.length;
     } else {
       // + 1 for the loading indicator
-      return state.quotes.quoteList.length + 1;
+      return _quoteStore.quotes.quoteList.length + 1;
     }
   }
 

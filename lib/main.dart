@@ -3,12 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
+import 'package:quotes_app/data/state/quote_store.dart';
 import 'package:quotes_app/data/state/theme_store.dart';
 import 'package:quotes_app/ui/global/strings.dart';
 import 'package:quotes_app/ui/global/theme/app_themes.dart';
 import 'package:quotes_app/ui/home/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data/injection.dart';
+import 'data/injection.iconfig.dart';
+import 'data/repository/quote_repository.dart';
 
 // TODO: flutter packages pub run build_runner watch
 void main() async {
@@ -23,8 +26,13 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Provider(
-      create: (_) => ThemeStore(),
+    return MultiProvider(
+      providers: [
+        Provider(create: (_) => ThemeStore()),
+        Provider(
+          create: (_) => QuoteStore(getIt<QuoteRepository>()),
+        )
+      ],
       child: MainApp(),
     );
   }
@@ -39,12 +47,12 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   ThemeStore _themeStore;
-  static bool preferenceLoaded = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _themeStore = Provider.of<ThemeStore>(context);
+    loadPreference();
   }
 
   @override
@@ -55,10 +63,6 @@ class _MainAppState extends State<MainApp> {
   }
 
   Widget _buildWithTheme(BuildContext context) {
-    if (!preferenceLoaded) {
-      preferenceLoaded = true;
-      loadPreference(context);
-    }
     return OKToast(
       child: Observer(
         builder: (_) => MaterialApp(
@@ -71,8 +75,7 @@ class _MainAppState extends State<MainApp> {
     );
   }
 
-  void loadPreference(BuildContext context) async {
-    // Load previous preference...
+  void loadPreference() async {
     var prefs = await SharedPreferences.getInstance();
     var theme = AppTheme.values[prefs.getInt(AppStrings.PREF_THEME) ?? 0];
     _themeStore.changeTheme(theme);
