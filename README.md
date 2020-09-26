@@ -4,14 +4,20 @@
 
 A quotes app to demonstrate flutter state management pattern(s).
 
-> _Currently it's build using bloc pattern but I'll add few more sooner into their separate branches as I learn them._ ❤️
+> _Currently it's build using bloc, mobx pattern but I'll add few more sooner into their separate branches as I learn them._ ❤️
 
 [![Moviesy App](https://img.shields.io/badge/Download-APK-blue.svg?style=for-the-badge&logo=android)](https://github.com/KaustubhPatange/FlutterQuotes/releases/download/v1.0/app-release.apk)
+
+## State Patterns
+
+- **Bloc** - Switch to `master` branch to see the implementation using _Bloc/Provider_ state-management.
+- **Mobx** - Switch to `mobx` branch to see the implementation using _Mobx_ state-management.
 
 ## Built With 🛠
 
 - [Flutter](https://flutter.dev/) - A toolkit for building beautiful, natively compiled applications for all platforms.
 - [Bloc](https://pub.dev/packages/flutter_bloc) - A state management library for flutter.
+- [Mobx](https://pub.dev/packages/mobx) - A reactive state management library for flutter.
 - [Injectable](https://pub.dev/packages/injectable) - A dependency injection library inspired by Angular DI.
 - [Lazy load scrollview](https://pub.dev/packages/lazy_load_scrollview) - To support pagination for listview.
 
