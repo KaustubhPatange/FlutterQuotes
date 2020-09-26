@@ -4,9 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:mdi/mdi.dart';
 import 'package:quotes_app/data/blocs/quoteBloc/quote_bloc.dart';
-import 'package:quotes_app/data/injection.iconfig.dart';
 import 'package:quotes_app/data/model/quote.dart';
-import 'package:quotes_app/data/repository/quote_repository.dart';
 import 'package:quotes_app/ui/global/strings.dart';
 import 'package:quotes_app/ui/global/theme/app_themes.dart';
 import 'package:quotes_app/ui/global/theme/bloc/theme_bloc.dart';
@@ -22,6 +20,12 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    BlocProvider.of<QuoteBloc>(context).add(GetQuotes());
+  }
+
   void changeTheme(BuildContext context) async {
     final bloc = BlocProvider.of<ThemeBloc>(context);
     final prefs = await SharedPreferences.getInstance();
@@ -48,13 +52,9 @@ class _HomeState extends State<Home> {
               onPressed: () => changeTheme(context))
         ],
       ),
-      body: BlocProvider(
-          create: (context) =>
-              QuoteBloc(quoteRepository: getIt<QuoteRepository>())
-                ..add(GetQuotes()),
-          child: BlocBuilder<QuoteBloc, QuoteState>(
-            builder: _scaffoldBody,
-          )),
+      body: BlocBuilder<QuoteBloc, QuoteState>(
+        builder: _scaffoldBody,
+      ),
     );
   }
 

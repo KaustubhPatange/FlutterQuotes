@@ -6,7 +6,10 @@ import 'package:quotes_app/ui/global/strings.dart';
 import 'package:quotes_app/ui/global/theme/app_themes.dart';
 import 'package:quotes_app/ui/home/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'data/blocs/quoteBloc/quote_bloc.dart';
 import 'data/injection.dart';
+import 'data/injection.iconfig.dart';
+import 'data/repository/quote_repository.dart';
 import 'ui/global/theme/bloc/theme_bloc.dart';
 
 void main() async {
@@ -15,26 +18,39 @@ void main() async {
       SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   // SystemChrome.setPreferredOrientations(
   //     [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
-  runApp(MyApp());
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => ThemeBloc()),
+        BlocProvider(create: (_) => QuoteBloc(getIt<QuoteRepository>())),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  static bool preferenceLoaded = false;
+class MyApp extends StatefulWidget {
+  MyApp({Key key}) : super(key: key);
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    loadPreference(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ThemeBloc(),
-      child: BlocBuilder<ThemeBloc, ThemeState>(
-        builder: _buildWithTheme,
-      ),
+    return BlocBuilder<ThemeBloc, ThemeState>(
+      builder: (_, state) => _buildWithTheme(state),
     );
   }
 
-  Widget _buildWithTheme(BuildContext context, ThemeState state) {
-    if (!preferenceLoaded) {
-      preferenceLoaded = true;
-      loadPreference(context);
-    }
+  Widget _buildWithTheme(ThemeState state) {
     return OKToast(
       child: MaterialApp(
           title: 'Flutter Demo',

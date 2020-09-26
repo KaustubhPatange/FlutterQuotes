@@ -13,7 +13,7 @@ part 'quote_state.dart';
 class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
   final QuoteRepository quoteRepository;
 
-  QuoteBloc({@required this.quoteRepository}) : super(QuoteInitial());
+  QuoteBloc(this.quoteRepository) : super(QuoteInitial());
 
   @override
   Stream<QuoteState> mapEventToState(
