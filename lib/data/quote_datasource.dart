@@ -20,7 +20,7 @@ class QuoteDatasource {
     currentPage++;
 
     final response = await http.get(
-        "https://quote-garden.herokuapp.com/api/v2/quotes?page=$currentPage&limit=10");
+        "https://quote-garden.herokuapp.com/api/v3/quotes?page=$currentPage&limit=10");
 
     if (response.statusCode == 200) {
       final quotes = Quotes.fromJson(jsonDecode((response.body)));

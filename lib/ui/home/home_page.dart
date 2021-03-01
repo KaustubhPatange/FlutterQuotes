@@ -87,7 +87,7 @@ class _HomeState extends State<Home> {
       },
       child: LazyLoadScrollView(
         onEndOfPage: () {
-          if (int.parse(state.quotes.currentPage) < state.quotes.totalPages) {
+          if (state.quotes.currentPage < state.quotes.totalPages) {
             print("Loading page: ${state.quotes.currentPage}");
             BlocProvider.of<QuoteBloc>(context).add(GetQuotes());
           }
@@ -106,7 +106,7 @@ class _HomeState extends State<Home> {
   }
 
   int _calculateListItemCount(QuoteLoaded state) {
-    if (int.parse(state.quotes.currentPage) >= state.quotes.totalPages) {
+    if (state.quotes.currentPage >= state.quotes.totalPages) {
       return state.quotes.quoteList.length;
     } else {
       // + 1 for the loading indicator

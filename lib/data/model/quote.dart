@@ -23,7 +23,7 @@ class Quotes extends Equatable {
   final int statusCode;
   final String message;
   final int totalPages;
-  final String currentPage;
+  final int currentPage;
   final List<Quote> quoteList;
 
   Quotes(
@@ -47,13 +47,13 @@ class Quotes extends Equatable {
   }
 
   factory Quotes.fromJson(Map<String, dynamic> json) {
-    List<dynamic> jsonArray = json["quotes"];
+    List<dynamic> jsonArray = json["data"];
     var quoteList = jsonArray.map((e) => Quote.fromJson(e)).toList();
     return Quotes(
         statusCode: json["statusCode"],
         message: json["message"],
-        totalPages: json["totalPages"],
-        currentPage: json["currentPage"],
+        totalPages: json["pagination"]["totalPages"],
+        currentPage: json["pagination"]["currentPage"],
         quoteList: quoteList);
   }
 }
