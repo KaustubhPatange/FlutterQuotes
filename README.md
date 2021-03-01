@@ -6,7 +6,7 @@ A quotes app to demonstrate flutter state management pattern(s).
 
 > _Currently it's build using bloc, mobx pattern but I'll add few more sooner into their separate branches as I learn them._ ❤️
 
-[![Moviesy App](https://img.shields.io/badge/Download-APK-blue.svg?style=for-the-badge&logo=android)](https://github.com/KaustubhPatange/FlutterQuotes/releases/download/v1.0/app-release.apk)
+[![Moviesy App](https://img.shields.io/badge/Download-APK-blue.svg?style=for-the-badge&logo=android)](https://github.com/KaustubhPatange/FlutterQuotes/releases/download/v1.0.1/app-release.apk)
 
 ## State Patterns
 
